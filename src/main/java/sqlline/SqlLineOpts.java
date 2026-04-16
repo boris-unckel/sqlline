@@ -539,7 +539,7 @@ public class SqlLineOpts implements Completer {
     case INTEGER:
       try {
         valueToSet = value instanceof Integer || value.getClass() == int.class
-          ? value : Integer.parseInt(String.valueOf(value));
+            ? value : Integer.parseInt(String.valueOf(value));
       } catch (Exception e) {
         sqlLine.error(
             sqlLine.loc("not-a-number",

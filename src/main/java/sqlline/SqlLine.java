@@ -1750,10 +1750,10 @@ public class SqlLine {
       final SeparatedValuesOutputFormat csvOutput =
           (SeparatedValuesOutputFormat) f;
       if (csvOutput.separator == null && getOpts().getCsvDelimiter() != null
-          || (csvOutput.separator != null
+          || csvOutput.separator != null
               && !csvOutput.separator.equals(getOpts().getCsvDelimiter())
-              || csvOutput.quoteCharacter
-                  != getOpts().getCsvQuoteCharacter())) {
+          || csvOutput.quoteCharacter
+              != getOpts().getCsvQuoteCharacter()) {
         f = new SeparatedValuesOutputFormat(this,
             getOpts().getCsvDelimiter(), getOpts().getCsvQuoteCharacter());
         Map<String, OutputFormat> updFormats =

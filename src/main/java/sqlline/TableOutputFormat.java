@@ -62,7 +62,7 @@ class TableOutputFormat implements OutputFormat {
       if (sqlLine.getOpts().getShowHeader()) {
         final int headerInterval =
             sqlLine.getOpts().getHeaderInterval();
-        if ((index <= 1 || index <= 2 && showTypes)
+        if (index <= 1 || index <= 2 && showTypes
             || headerInterval > 0 && index % headerInterval == 0) {
           if (index == 0) {
             printRow(header, style.getHeaderTopLeft() + hLine,

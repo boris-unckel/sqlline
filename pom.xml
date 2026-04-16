@@ -1,12 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>net.hydromatic</groupId>
-    <artifactId>parent</artifactId>
-    <version>0.1</version>
-  </parent>
-
   <groupId>sqlline</groupId>
   <artifactId>sqlline</artifactId>
   <packaging>jar</packaging>
@@ -20,37 +14,6 @@
     <url>https://github.com/julianhyde</url>
   </organization>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <top.dir>${project.basedir}</top.dir>
-
-    <!-- The following list is sorted. -->
-    <checkstyle.version>9.0.1</checkstyle.version>
-    <docbkx-maven-plugin.version>2.0.17</docbkx-maven-plugin.version>
-    <forbiddenapis.version>3.2</forbiddenapis.version>
-    <h2.version>2.1.210</h2.version>
-    <hamcrest.version>2.2</hamcrest.version>
-    <hsqldb.version>2.5.0</hsqldb.version>
-    <jline.version>4.0.12</jline.version>
-    <jmockit.version>1.49</jmockit.version>
-    <junit.version>5.8.1</junit.version>
-    <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-    <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
-    <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
-    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-    <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
-    <maven-javadoc-plugin.additionalOptions>-html5</maven-javadoc-plugin.additionalOptions>
-    <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-    <maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
-    <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
-    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-    <scott-data-hsqldb.version>0.1</scott-data-hsqldb.version>
-    <skip.docbkx>false</skip.docbkx>
-  </properties>
-
   <licenses>
     <license>
       <name>Modified BSD License</name>
@@ -58,6 +21,55 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <id>julianhyde</id>
+      <name>Julian Hyde</name>
+      <email>jhyde@apache.org</email>
+      <url>https://github.com/julianhyde</url>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-8</timezone>
+    </developer>
+  </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <top.dir>${project.basedir}</top.dir>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+
+    <!-- The following list is sorted. -->
+    <checkstyle.version>10.26.1</checkstyle.version>
+    <docbkx-maven-plugin.version>2.0.17</docbkx-maven-plugin.version>
+    <forbiddenapis.version>3.10</forbiddenapis.version>
+    <h2.version>2.1.210</h2.version>
+    <hamcrest.version>3.0</hamcrest.version>
+    <hsqldb.version>2.7.4</hsqldb.version>
+    <jline.version>4.0.12</jline.version>
+    <jmockit.version>1.49</jmockit.version>
+    <junit.version>5.11.4</junit.version>
+    <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+    <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+    <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
+    <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+    <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+    <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+    <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.additionalOptions>-html5</maven-javadoc-plugin.additionalOptions>
+    <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
+    <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+    <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
+    <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+    <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+    <scott-data-hsqldb.version>0.3</scott-data-hsqldb.version>
+    <skip.docbkx>false</skip.docbkx>
+  </properties>
 
   <distributionManagement>
     <snapshotRepository>
@@ -96,8 +108,6 @@
       <post>https://groups.google.com/group/sqlline-dev/post</post>
     </mailingList>
   </mailingLists>
-
-  <repositories />
 
   <build>
     <plugins>
@@ -190,6 +200,16 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>${maven-deploy-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>${maven-enforcer-plugin.version}</version>
         <executions>
@@ -204,7 +224,7 @@
                   <version>[11,)</version>
                 </requireJavaVersion>
                 <requireMavenVersion>
-                  <version>[3.2.3,)</version>
+                  <version>[3.6.3,)</version>
                 </requireMavenVersion>
               </rules>
             </configuration>
@@ -232,6 +252,7 @@
       </plugin>
       <plugin>
         <!--  To allow JMockit to be loaded first in surefire -->
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>${maven-dependency-plugin.version}</version>
         <executions>
@@ -251,6 +272,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
+        <version>${maven-release-plugin.version}</version>
         <configuration>
           <localCheckout>true</localCheckout>
           <pushChanges>false</pushChanges>
@@ -259,12 +281,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source-plugin.version}</version>
         <executions>
-           <execution>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-           </execution>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -443,6 +466,5 @@
         </plugins>
       </build>
     </profile>
-
   </profiles>
 </project>
