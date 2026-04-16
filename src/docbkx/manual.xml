@@ -1,8 +1,8 @@
 <!DOCTYPE book
   PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "https://docbook.org/xml/4.2/docbookx.dtd"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
 [
-    <!-- "http://www.docbook.org/xml/4.2/docbookx.dtd" -->
+    <!-- "https://docbook.org/xml/4.2/docbookx.dtd" (404 since docbook.org restructuring) -->
     <!-- "file:/sw/share/xml/dtd/docbookx/4.2.0/docbookx.dtd" -->
     <!ENTITY VERSION "1.12.0">
 ]>
