@@ -128,10 +128,8 @@
           <filename>sqllinedir</filename>.
           For the case of Windows OS additionally it is required to download
           into <filename>sqllinedir</filename>
-          the latest <filename>jline-terminal-jna.jar</filename>,
-          <filename>jline-terminal-jansi.jar</filename>,
-          <filename>jansi.jar</filename>,
-          and version 4.2.2 <filename>jna.jar</filename>
+          the latest <filename>jline-terminal-jni.jar</filename>
+          and <filename>jline-native.jar</filename>
           </para></listitem>
           <listitem><para>
           Download your database's JDBC driver files into

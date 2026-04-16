@@ -31,13 +31,13 @@
     <h2.version>2.1.210</h2.version>
     <hamcrest.version>2.2</hamcrest.version>
     <hsqldb.version>2.5.0</hsqldb.version>
-    <jline.version>3.21.0</jline.version>
+    <jline.version>4.0.12</jline.version>
     <jmockit.version>1.49</jmockit.version>
     <junit.version>5.8.1</junit.version>
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
     <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
@@ -201,7 +201,7 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[1.8,)</version>
+                  <version>[11,)</version>
                 </requireJavaVersion>
                 <requireMavenVersion>
                   <version>[3.2.3,)</version>
@@ -351,15 +351,12 @@
       <artifactId>jline-reader</artifactId>
       <version>${jline.version}</version>
     </dependency>
-    <!-- required to have terminal with advanced capabilities on Windows -->
+    <!-- JNI-based native terminal support (replaces jline-terminal-jansi and
+         jline-terminal-jna from JLine 3.x; provides cross-platform advanced
+         terminal capabilities including Windows). -->
     <dependency>
       <groupId>org.jline</groupId>
-      <artifactId>jline-terminal-jansi</artifactId>
-      <version>${jline.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jline</groupId>
-      <artifactId>jline-terminal-jna</artifactId>
+      <artifactId>jline-terminal-jni</artifactId>
       <version>${jline.version}</version>
     </dependency>
     <!-- required to have terminal with advanced capabilities on Windows -->
@@ -447,15 +444,5 @@
       </build>
     </profile>
 
-    <profile>
-      <id>java8</id>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <properties>
-        <!-- Javadoc only has a "-html5" flag in JDK 9 and higher. -->
-        <maven-javadoc-plugin.additionalOptions />
-      </properties>
-    </profile>
   </profiles>
 </project>
