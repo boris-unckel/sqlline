@@ -4,3 +4,4 @@ target
 *.iws
 *.ipr
 .idea/
+.mvn/wrapper/maven-wrapper.jar
