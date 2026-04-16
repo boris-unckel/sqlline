@@ -26,7 +26,7 @@ Parsed in `SqlLine.initArgs` (src/main/java/sqlline/SqlLine.java:325). Order of 
 | `-h`, `--help` | — | Print usage, exit with `ARGS` |
 | `-u <url>` | JDBC URL | Connection URL |
 | `-n <user>` | string | User name |
-| `-p <password>` | string | Password (plaintext on command line — see §9) |
+| `-p <password>` | string | Password (plaintext on command line — see §8.3) |
 | `-d <driverClass>` | FQN | Explicit JDBC driver class; registers it before connect |
 | `-e <sqlOr!cmd>` | string | Execute one command; may be repeated. Disables color. Implies exit after execution. |
 | `-f <file>` | path | Run script file via `!run`, then `!quit` |
@@ -56,7 +56,7 @@ Any other `-X` token ⇒ `Status.ARGS`. A value-taking flag at the end of argv w
 
 **Important for agents — last-command-wins semantics:** Both `-e` and `-f` can return `Status.OTHER` (exit 2) on failure, but the propagation rules differ:
 
-- **`-f <script>`** is fail-fast: on the first failing statement the script aborts and the process exits with `OTHER` (SqlLine.java:608-611 — `if (!callback.isSuccess() && runningScript) { ...; status = Status.OTHER; }`).
+- **`-f <script>`** is fail-fast: on the first failing statement the script aborts and the process exits with `OTHER`. `initArgs` dispatches `!run <file>` at SqlLine.java:497; inside that, `runCommands` breaks out of the loop on the first failing statement unless `force=true` (SqlLine.java:1840-1843), the callback is set to failure, and `initArgs` promotes it to `Status.OTHER` at SqlLine.java:498-500. The status survives to the enum-to-exit conversion at SqlLine.java:633 because the follow-up `!quit` is dispatched with a throwaway callback and leaves the main callback untouched.
 - **`-e <cmd>` (possibly repeated)** is *last-command-wins*: every `-e` runs, and the final exit code reflects only the status of the **last** `-e` (`DispatchCallback` has a single state field that each dispatch overwrites; `begin()` evaluates `callback.isFailure()` once after the loop at SqlLine.java:633). A single `-e "bad"` ⇒ `OTHER`; but `-e "bad" -e "good"` ⇒ `OK`.
 
 Agents that chain multiple `-e` and need reliable failure detection should either use a single `-f` script, or issue one `-e` per process invocation.
@@ -122,8 +122,7 @@ All meta-commands begin with `!`. Registered in `Application.getCommandHandlers`
 | `!reconnect` | — | Re-open the current connection |
 | `!nickname` | `<name>` | Label active connection |
 | `!scan` | — | Enumerate driver classes on classpath |
-| `!save` | — | Append current connection to `~/.sqlline/connectionurl.properties` |
-| `!load` | — | Load saved URLs |
+| `!save` | — | Write current session properties to `~/.sqlline/sqlline.properties` (not connection URLs — misnamed historically) |
 | `!showconfconnections` | — | List named connections from config file |
 | `!rereadconfconnections` | `<file>` | Reload config file |
 
@@ -193,7 +192,7 @@ All meta-commands begin with `!`. Registered in `Application.getCommandHandlers`
 | `!manual` | — | Show bundled manual |
 | `!rehash` | — | Rebuild completion tables |
 | `!resize` | — | Re-detect terminal size |
-| `!dropall` | `[schema]` | `DROP TABLE` every table in schema (destructive; obeys `confirmPattern`) |
+| `!dropall` | `[schema]` | `DROP TABLE` every table in schema (destructive). Always prompts with a hardcoded y/n question via the JLine terminal; the `confirm`/`confirmPattern` session properties do **not** gate this prompt. The generated `DROP TABLE` statements still go through the SQL dispatch path, so they are subject to `confirmPattern` if `confirm=true`. |
 
 ## 5. Session properties
 
@@ -210,7 +209,7 @@ Enumerated in `sqlline.BuiltInProperty`. Set via `--name=value` on CLI, `!set na
 | `confirm` | BOOLEAN | false | Confirm statements matching `confirmPattern` |
 | `confirmPattern` | STRING regex | `^(?i:(DROP\|DELETE))` | |
 | `connectionConfig` | FILE_PATH | "" | File used by `!connect -c name` |
-| `csvDelimiter` | STRING | `,` | No quotes allowed (throws `UnsupportedOperationException` — SqlLine.java:1347) |
+| `csvDelimiter` | STRING | `,` | Stored verbatim and handed to `SeparatedValuesOutputFormat`; no validation. Values containing `"` or `'` are accepted but produce malformed CSV because the format quotes each field with `csvQuoteCharacter`. |
 | `csvQuoteCharacter` | CHAR | `'` | |
 | `dateFormat` / `timeFormat` / `timestampFormat` / `numberFormat` | STRING | `default` | `default` = JDBC-native `toString`; else `SimpleDateFormat`/`DecimalFormat` pattern |
 | `escapeOutput` | BOOLEAN | false | Escape control chars in output |
@@ -225,7 +224,7 @@ Enumerated in `sqlline.BuiltInProperty`. Set via `--name=value` on CLI, `!set na
 | `keepSemicolon` | BOOLEAN | false | Keep `;` in SQL sent to driver |
 | `liveTemplates` | FILE_PATH | "" | |
 | `maxColumnWidth` | INTEGER | -1 | -1 = unlimited |
-| `maxWidth` / `maxHeight` | INTEGER | terminal-derived | **Read-only**, auto from terminal |
+| `maxWidth` / `maxHeight` | INTEGER | 80, then overwritten by `terminal.getWidth()` / `getHeight()` when a real terminal is attached | Writable (`!set maxWidth 200`), but `couldBeStored=false` so never persisted to `sqlline.properties`. Re-detected each prompt if `autoResize=true`. |
 | `maxHistoryRows` / `maxHistoryFileRows` | INTEGER | JLine defaults | |
 | `mode` | STRING | `emacs` | `emacs` or `vi` — line-edit mode |
 | `nullValue` | STRING | `default` | Rendered for SQL NULL |
@@ -245,12 +244,14 @@ Enumerated in `sqlline.BuiltInProperty`. Set via `--name=value` on CLI, `!set na
 | `silent` | BOOLEAN | false | Suppress prompt/banner |
 | `strictJdbc` | BOOLEAN | false | Disable workarounds for non-conforming drivers |
 | `tableStyle` | STRING enum | — | Table rendering style |
-| `timeout` | INTEGER ms | -1 | `Statement.setQueryTimeout` (divided by 1000 before call) |
+| `timeout` | INTEGER seconds | -1 | Passed unchanged to `Statement.setQueryTimeout(int)` (SqlLine.java:1782), whose contract is seconds. -1 (the default) disables the call. |
 | `trimScripts` | BOOLEAN | true | Strip leading/trailing whitespace from script lines |
 | `useLineContinuation` | BOOLEAN | true | Multi-line SQL via `\` continuation |
 | `verbose` | BOOLEAN | false | Print stacktraces on exceptions |
-| `version` | STRING | — | **Read-only** |
+| `version` | STRING | — | **Read-only** (only truly read-only property) |
 | `connectInteractionMode` | STRING enum | `askCredentials` | `askCredentials` / `notAskCredentials` / `useNPTogetherOrEmpty` |
+| `outputFormat` | STRING enum | `table` | Active output format; enumerated in §6. Settable via `--outputformat=<name>` or `!outputformat <name>`. |
+| `propertiesFile` | FILE_PATH | `~/.sqlline/sqlline.properties` | File `!save` writes to and `!properties` / the startup loader reads. |
 
 ## 6. Output formats
 
@@ -328,19 +329,26 @@ Drivers are discovered via JDBC 4 `ServiceLoader` (`META-INF/services/java.sql.D
 - Built with `--release 21`; will not run on JDK < 21 (enforced by `requireJavaVersion=[21,)` in pom.xml). Confirm with `java -version` before launch.
 
 ### 8.6 CSV delimiter
-- `csvDelimiter` must not contain a double-quote — sqlline throws `UnsupportedOperationException` on any value containing `"` (SqlLine.java:1347).
+- `csvDelimiter` is stored verbatim with **no validation**. `SeparatedValuesOutputFormat` uses it as a raw string separator and wraps every field with `csvQuoteCharacter`. A delimiter that contains either quote character (`'` or `"`) or the current `csvQuoteCharacter` produces output that most CSV parsers cannot round-trip. Stick to single characters (`,`, `|`, `\t`, etc.).
+- The `UnsupportedOperationException` at SqlLine.java:1347 comes from the internal `split(line, delim, limit)` helper used to parse SqlLine **command lines**; it is not part of the CSV output path.
 
 ### 8.7 `!quit` side effects
 - `!quit` initiates exit and closes all connections. After `!quit` no further commands are processed, even on the same line.
 
 ### 8.8 `!dropall`
-- Destructive. Obeys `confirm`/`confirmPattern` only if `confirm=true`. Agents should set `--confirm=false` explicitly when they expect no prompt, or `--confirm=true` when they want to be stopped (but `confirm=true` waits for stdin and will hang a non-interactive run).
+- Destructive. The command itself **always** prompts for `y/n` via the JLine terminal (`Commands.dropall` → `getUserAnswer`, Commands.java:549-552); this prompt is hardcoded and is **not** controlled by the `confirm` / `confirmPattern` session properties. In a non-interactive run (piped stdin, `-e`, `-f` with no TTY) the prompt blocks and the command will never answer itself — avoid `!dropall` from agents unless you attach a real terminal or replace the handler with a custom `CommandHandler`.
+- Once answered, `!dropall` synthesises `DROP TABLE` statements and runs them through the normal SQL dispatch path, which **does** check `confirmPattern` when `confirm=true`. So `confirm=true` causes a *second* confirmation prompt per table.
 
 ### 8.9 Read-only properties
-- `maxWidth`, `maxHeight`, `version` cannot be set. Attempting to set them is a no-op with a warning.
+- Only `version` is truly read-only (`isReadOnly=true` in `BuiltInProperty`); attempting `!set version x` logs `property-readonly` and is a no-op.
+- `maxWidth` and `maxHeight` are writable at runtime (`couldBeStored=false, isReadOnly=false`) but are (a) overwritten by terminal detection at startup and on every prompt if `autoResize=true`, and (b) excluded from `sqlline.properties` persistence. A manual `!set maxWidth 200` sticks only until the next auto-resize or reconnect.
 
 ### 8.10 Custom handlers
-- `-ac`, `-ph`, `-ch` load classes by name from the launcher classpath. The class must have a public no-arg constructor. Load failures are reported on stderr and the startup continues with defaults — this does not change the exit code.
+- `-ac`, `-ph`, `-ch` load classes by name from the launcher classpath. The required public constructor differs by handler:
+  - `-ac <Application-subclass>` → no-arg constructor (`Commands.appconfig`, Commands.java:2058-2059).
+  - `-ph <PromptHandler-subclass>` → single-arg `(SqlLine)` constructor (`Commands.prompthandler`, Commands.java:2087-2088). Pass `default` to restore the built-in handler.
+  - `-ch <CommandHandler-subclass[,...]>` → single-arg `(SqlLine)` constructor (`Commands.commandhandler`, Commands.java:1857-1859). A handler whose `getNames()` collides with any already-registered name is silently skipped.
+- Load failures are reported on stderr via a throwaway `DispatchCallback` in `initArgs` and startup continues with defaults — this does not change the exit code.
 
 ### 8.11 Transaction behaviour
 - Default `autoCommit=true`. If the target DB does not support autocommit with certain DDL (some vendors), expect surprises unless you issue `!autocommit off` first.
