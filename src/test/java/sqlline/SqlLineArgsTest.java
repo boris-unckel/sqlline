@@ -488,7 +488,7 @@ public class SqlLineArgsTest {
   @Test
   public void testScan() {
     final String expectedLine0 = "Compliant Version Driver Class";
-    final String expectedLine1 = "yes       2.5     org.hsqldb.jdbc.JDBCDriver";
+    final String expectedLine1 = "yes       2.7     org.hsqldb.jdbc.JDBCDriver";
     checkScriptFile("!scan\n", false,
         equalTo(SqlLine.Status.OK),
         allOf(containsString(expectedLine0), containsString(expectedLine1)));
@@ -1857,8 +1857,8 @@ public class SqlLineArgsTest {
     final String line0 =
         "|   TABLE_SCHEM   |  TABLE_CATALOG  | IS_DEFAULT |";
     final String line1 = "| INFORMATION_SCHEMA | PUBLIC          | FALSE";
-    final String line2 = "| PUBLIC          | PUBLIC          | TRUE       |";
-    final String line3 = "| SCOTT           | PUBLIC          | FALSE      |";
+    final String line2 = "| PUBLIC          | PUBLIC          | FALSE      |";
+    final String line3 = "| SCOTT           | PUBLIC          | TRUE       |";
     final String line4 = "| SYSTEM_LOBS     | PUBLIC          | FALSE      |";
     checkScriptFile(script, true, equalTo(SqlLine.Status.OK),
         allOf(containsString(line0), containsString(line1),
@@ -2383,7 +2383,7 @@ public class SqlLineArgsTest {
         + " sqlline.extensions.CustomApplication\n"
         + "!scan";
     checkScriptFile(script, true, equalTo(SqlLine.Status.OK),
-        allOf(containsString("yes       2.5     org.hsqldb.jdbc.JDBCDriver"),
+        allOf(containsString("yes       2.7     org.hsqldb.jdbc.JDBCDriver"),
             not(containsString("org.h2.Driver"))));
   }
 
