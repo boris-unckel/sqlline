@@ -39,8 +39,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <top.dir>${project.basedir}</top.dir>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <java.version>21</java.version>
 
     <!-- The following list is sorted. -->
     <checkstyle.version>10.26.1</checkstyle.version>
@@ -146,10 +145,11 @@
         <configuration>
           <!-- if the used Java version is too new, don't fail, just do nothing: -->
           <failOnUnsupportedJava>false</failOnUnsupportedJava>
+          <targetVersion>${java.version}</targetVersion>
           <bundledSignatures>
             <!--
-              This will automatically choose the right
-              signatures based on 'maven.compiler.target':
+              Pin signatures to the configured Java release so the check
+              is deterministic regardless of the JDK running Maven.
             -->
             <bundledSignature>jdk-unsafe</bundledSignature>
             <bundledSignature>jdk-deprecated</bundledSignature>
@@ -202,6 +202,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <release>${java.version}</release>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -221,7 +224,7 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[11,)</version>
+                  <version>[${java.version},)</version>
                 </requireJavaVersion>
                 <requireMavenVersion>
                   <version>[3.6.3,)</version>
@@ -238,7 +241,7 @@
         <configuration>
           <additionalOptions>${maven-javadoc-plugin.additionalOptions}</additionalOptions>
           <show>public</show>
-          <source>${maven.compiler.source}</source>
+          <release>${java.version}</release>
           <detectJavaApiLink>false</detectJavaApiLink>
         </configuration>
         <executions>
