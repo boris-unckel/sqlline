@@ -25,6 +25,7 @@ class MemoizingSupplier<E> implements Supplier<E> {
   private final Supplier<E> supplier;
   private E value;
 
+  @SuppressWarnings("unchecked")
   MemoizingSupplier(Supplier<E> supplier) {
     this.supplier = Objects.requireNonNull(supplier);
     value = (E) NOT_SET;

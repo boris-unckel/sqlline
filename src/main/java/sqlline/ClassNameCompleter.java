@@ -56,11 +56,11 @@ public class ClassNameCompleter extends StringsCompleter {
     // Now add the URL that holds java.lang.String. This is because
     // some JVMs do not report the core classes jar in the list of
     // class loaders.
-    Class[] systemClasses = {
+    Class<?>[] systemClasses = {
         String.class, javax.swing.JFrame.class
     };
 
-    for (Class systemClass : systemClasses) {
+    for (Class<?> systemClass : systemClasses) {
       URL classURL = systemClass.getResource(
           "/" + systemClass.getName().replace('.', '/') + ".class");
 

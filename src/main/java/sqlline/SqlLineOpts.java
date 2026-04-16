@@ -98,6 +98,7 @@ import static sqlline.BuiltInProperty.VERBOSE;
 /**
  * Session options.
  */
+@SuppressWarnings("this-escape")
 public class SqlLineOpts implements Completer {
   public static final String PROPERTY_PREFIX = "sqlline.";
   public static final String PROPERTY_NAME_EXIT =

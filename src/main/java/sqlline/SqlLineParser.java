@@ -93,6 +93,7 @@ import static sqlline.Commands.flush;
  * </tr>
  * </table>
  */
+@SuppressWarnings("this-escape")
 public class SqlLineParser extends DefaultParser {
   private static final String DEFAULT_QUOTES = "'\"`";
 

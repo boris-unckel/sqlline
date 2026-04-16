@@ -23,6 +23,7 @@ import java.sql.SQLException;
  * would be handled.
  */
 class WrappedSqlException extends RuntimeException {
+  private static final long serialVersionUID = 1L;
 
   /** Creates a WrappedSQLException. */
   WrappedSqlException(SQLException ex) {

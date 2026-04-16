@@ -135,7 +135,7 @@ class DatabaseConnection {
     connection = theDriver.connect(url, info);
     meta = (DatabaseMetaData) Proxy.newProxyInstance(
         DatabaseMetaData.class.getClassLoader(),
-        new Class[] {DatabaseMetaData.class},
+        new Class<?>[] {DatabaseMetaData.class},
         new DatabaseMetaDataHandler(connection.getMetaData()));
     try {
       sqlLine.debug(

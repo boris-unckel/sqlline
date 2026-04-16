@@ -189,7 +189,7 @@ class DatabaseMetaDataHandler implements InvocationHandler {
       }
     }
 
-    MethodWithDefault(Object defaultValue, Class... parameterTypes) {
+    MethodWithDefault(Object defaultValue, Class<?>... parameterTypes) {
       this.method = Objects.requireNonNull(findMethod(name(), parameterTypes));
       this.defaultValue = defaultValue;
     }
@@ -214,7 +214,7 @@ class DatabaseMetaDataHandler implements InvocationHandler {
      * @return Method, never null
      */
     private static Method findMethod(String methodName,
-        Class... parameterTypes) {
+        Class<?>... parameterTypes) {
       try {
         return DatabaseMetaData.class.getDeclaredMethod(methodName,
             parameterTypes);

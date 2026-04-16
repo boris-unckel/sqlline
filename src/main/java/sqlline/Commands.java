@@ -200,7 +200,7 @@ public class Commands {
     try {
       Set<String> methodNames = new TreeSet<>();
       Set<String> methodNamesUpper = new TreeSet<>();
-      Class currentClass = sqlLine.getConnection().getMetaData().getClass();
+      Class<?> currentClass = sqlLine.getConnection().getMetaData().getClass();
       Object res = null;
       do {
         for (Method method : currentClass.getDeclaredMethods()) {
@@ -2097,8 +2097,8 @@ public class Commands {
     callback.setToSuccess();
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   static Map<String, String> asMap(Properties properties) {
-    //noinspection unchecked
     return (Map) properties;
   }
 

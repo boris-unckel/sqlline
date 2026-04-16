@@ -36,6 +36,7 @@ import org.jline.utils.StyleResolver;
  * <p>This class can be extended to allow customizations for:
  * default prompt, prompt or right prompt.
  */
+@SuppressWarnings("this-escape")
 public class PromptHandler {
   private static final Map<Character, Supplier<String>>
       DATE_TIME_FORMATS = Collections.unmodifiableMap(
@@ -151,6 +152,7 @@ public class PromptHandler {
     }
   }
 
+  @SuppressWarnings("fallthrough")
   protected AttributedString getPrompt(
       SqlLine sqlLine, int connectionIndex, String prompt) {
     AttributedStringBuilder promptStringBuilder = new AttributedStringBuilder();

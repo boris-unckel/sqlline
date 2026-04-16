@@ -95,7 +95,7 @@ public class DatabaseMetaDataHandlerTest {
       final DatabaseMetaData wrapper =
           (DatabaseMetaData) Proxy.newProxyInstance(
             DatabaseMetaData.class.getClassLoader(),
-            new Class[]{DatabaseMetaData.class},
+            new Class<?>[]{DatabaseMetaData.class},
             new DatabaseMetaDataHandler(meta));
 
       assertThat(wrapper.supportsAlterTableWithAddColumn(), is(false));

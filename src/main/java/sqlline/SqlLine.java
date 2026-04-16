@@ -57,6 +57,7 @@ import static org.jline.keymap.KeyMap.ctrl;
  * <li>XA transactions</li>
  * </ul>
  */
+@SuppressWarnings("this-escape")
 public class SqlLine {
   private static final ResourceBundle RESOURCE_BUNDLE =
       ResourceBundle.getBundle(SqlLine.class.getName(), Locale.ROOT);
@@ -541,6 +542,7 @@ public class SqlLine {
    * @throws IOException if SQLLine cannot obtain
    *         history file or start console reader
    */
+  @SuppressWarnings("fallthrough")
   public Status begin(String[] args, InputStream inputStream,
       boolean saveHistory) throws IOException {
     try {
@@ -1459,11 +1461,11 @@ public class SqlLine {
     return (charAt - current) % 2 != 0;
   }
 
+  @SuppressWarnings("unchecked")
   static <K, V> Map<K, V> map(K key, V value, Object... obs) {
     final Map<K, V> m = new HashMap<>();
     m.put(key, value);
     for (int i = 0; i < obs.length - 1; i += 2) {
-      //noinspection unchecked
       m.put((K) obs[i], (V) obs[i + 1]);
     }
     return m;
@@ -1620,9 +1622,9 @@ public class SqlLine {
     return buf.toString();
   }
 
-  ///////////////////////////////
+  // ==============================
   // Exception handling routines
-  ///////////////////////////////
+  // ==============================
 
   public void handleException(Throwable e) {
     while (e instanceof InvocationTargetException) {
@@ -1739,9 +1741,9 @@ public class SqlLine {
     return scannedDrivers;
   }
 
-  ///////////////////////////////////////
+  // ======================================
   // ResultSet output formatting classes
-  ///////////////////////////////////////
+  // ======================================
 
   int print(ResultSet rs, DispatchCallback callback) throws SQLException {
     String format = getOpts().getOutputFormat();

@@ -36,16 +36,17 @@ class Reflector {
     return invoke(on, method, Arrays.asList(args));
   }
 
-  public Object invoke(Object on, String method, List args)
+  public Object invoke(Object on, String method, List<?> args)
       throws InvocationTargetException, IllegalAccessException,
       ClassNotFoundException {
     return invoke(on, on == null ? null : on.getClass(), method, args);
   }
 
-  public Object invoke(Object on, Class defClass, String methodName, List args)
+  public Object invoke(Object on, Class<?> defClass, String methodName,
+      List<?> args)
       throws InvocationTargetException, IllegalAccessException,
       ClassNotFoundException {
-    Class c = defClass != null ? defClass : on.getClass();
+    Class<?> c = defClass != null ? defClass : on.getClass();
     List<Method> candidateMethods = Stream.of(c.getMethods())
         .filter(m -> m.getName().equalsIgnoreCase(methodName))
         .filter(m -> Modifier.isPublic(m.getModifiers()))
@@ -60,13 +61,13 @@ class Reflector {
     for (Method method : candidateMethods) {
       if (method.getParameterCount() != args.size()) {
         StringJoiner methodTypes = new StringJoiner(", ");
-        for (Class type: method.getParameterTypes()) {
+        for (Class<?> type: method.getParameterTypes()) {
           methodTypes.add(type.getTypeName());
         }
         arguments = methodTypes.toString();
         continue;
       }
-      Class[] ptypes = method.getParameterTypes();
+      Class<?>[] ptypes = method.getParameterTypes();
 
       Object[] converted = convert(args, ptypes);
       if (converted == null) {
@@ -80,7 +81,7 @@ class Reflector {
         sqlLine.loc("method-requires-arguments", methodName, arguments));
   }
 
-  public static Object[] convert(List objects, Class[] toTypes)
+  public static Object[] convert(List<?> objects, Class<?>[] toTypes)
       throws ClassNotFoundException {
     Object[] converted = new Object[objects.size()];
     for (int i = 0; i < converted.length; i++) {
@@ -89,7 +90,7 @@ class Reflector {
     return converted;
   }
 
-  public static Object convert(Object ob, Class toType)
+  public static Object convert(Object ob, Class<?> toType)
       throws ClassNotFoundException {
     if (ob == null || ob.toString().equals("null")) {
       return null;

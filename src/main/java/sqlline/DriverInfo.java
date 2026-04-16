@@ -17,6 +17,7 @@ import java.util.Properties;
 /**
  * Description of a JDBC driver.
  */
+@SuppressWarnings("this-escape")
 public class DriverInfo {
   public String sampleURL;
 

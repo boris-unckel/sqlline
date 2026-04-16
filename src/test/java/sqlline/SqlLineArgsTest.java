@@ -2786,7 +2786,6 @@ public class SqlLineArgsTest {
           + "1536743115431:SELECT \\n '213' \\n as \\n c1;\n"
           + "1536743115431:!/ 8\n");
       bw.flush();
-      bw.close();
 
       SqlLine.Status status = begin(sqlLine, os, true,
           "--historyfile=" + tmpHistoryFile.getAbsolutePath(),
@@ -3224,7 +3223,6 @@ public class SqlLineArgsTest {
           + "  user: " + ConnectionSpec.H2.username + "\n"
           + "  password: " + ConnectionSpec.H2.password + "\n");
       bw.flush();
-      bw.close();
 
       String[] connectionArgs = new String[]{
           "-c", connectionName,
@@ -3346,7 +3344,6 @@ public class SqlLineArgsTest {
               + "  user: " + ConnectionSpec.H2.username + "\n"
               + "  password: " + "somenonemptypw" + "\n");
       bw.flush();
-      bw.close();
     } catch (Throwable t) {
       throw new RuntimeException(t);
     }

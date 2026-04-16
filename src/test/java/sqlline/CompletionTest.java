@@ -266,11 +266,10 @@ public class CompletionTest {
   }
 
   private static Stream<Arguments> dialectSpecificNameProvider() {
-    Dialect def = DialectImpl.getDefault();
     final Dialect storesLowerDialect = DialectImpl.create(
-        def.DEFAULT_KEYWORD_SET, "\"\"", "storesLower", true, false, "");
+        Dialect.DEFAULT_KEYWORD_SET, "\"\"", "storesLower", true, false, "");
     final Dialect storesUpperDialect = DialectImpl.create(
-        def.DEFAULT_KEYWORD_SET, "[]", "storesUpper", false, true, "");
+        Dialect.DEFAULT_KEYWORD_SET, "[]", "storesUpper", false, true, "");
     return Stream.of(
         of("SCHEMA", BuiltInDialect.DEFAULT, "SCHEMA"),
         of("", BuiltInDialect.DEFAULT, ""),
@@ -299,11 +298,10 @@ public class CompletionTest {
   }
 
   private static Stream<Arguments> nameProvider() {
-    Dialect dialect = DialectImpl.getDefault();
     final Dialect dialectLowWithExtra = DialectImpl.create(
-        dialect.DEFAULT_KEYWORD_SET, "\"\"", "storesLower", true, false, "@#");
+        Dialect.DEFAULT_KEYWORD_SET, "\"\"", "storesLower", true, false, "@#");
     final Dialect dialectUp = DialectImpl.create(
-        dialect.DEFAULT_KEYWORD_SET, "[]", "storesUpper", false, true, "");
+        Dialect.DEFAULT_KEYWORD_SET, "[]", "storesUpper", false, true, "");
     return Stream.of(
         of("SCHEMA", BuiltInDialect.DEFAULT, false, "SCHEMA"),
         of("\"SCHEMA\"", BuiltInDialect.DEFAULT, true, "SCHEMA"),
