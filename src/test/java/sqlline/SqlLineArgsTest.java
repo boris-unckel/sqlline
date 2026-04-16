@@ -33,7 +33,6 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hsqldb.jdbc.CustomDatabaseMetadata;
 import org.hsqldb.jdbc.JDBCConnection;
 import org.hsqldb.jdbc.JDBCDatabaseMetaData;
 import org.hsqldb.jdbc.JDBCResultSet;
@@ -2021,14 +2020,6 @@ public class SqlLineArgsTest {
 
   @Test
   public void testMetadataForClassHierarchy() {
-    new MockUp<JDBCConnection>() {
-      @Mock
-      public DatabaseMetaData getMetaData() throws SQLException {
-        return new CustomDatabaseMetadata(
-            (JDBCConnection) sqlLine.getConnection());
-      }
-    };
-
     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
       SqlLine.Status status =
           begin(sqlLine, os, false, "-e", "!set maxwidth 80");
@@ -2038,6 +2029,13 @@ public class SqlLineArgsTest {
           + ConnectionSpec.HSQLDB.url + " \""
           + ConnectionSpec.HSQLDB.username + "\" \""
           + ConnectionSpec.HSQLDB.password + "\"");
+      final DatabaseMetaData realMeta = sqlLine.getConnection().getMetaData();
+      new MockUp<JDBCConnection>() {
+        @Mock
+        public DatabaseMetaData getMetaData() {
+          return new CustomDatabaseMetadata(realMeta);
+        }
+      };
       os.reset();
       sqlLine.runCommands(dc, "!tables");
       String output = os.toString("UTF8");

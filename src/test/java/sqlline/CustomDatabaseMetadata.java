@@ -9,18 +9,22 @@
 //
 // http://opensource.org/licenses/BSD-3-Clause
 */
-package org.hsqldb.jdbc;
+package sqlline;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Custom implementation of {@link java.sql.DatabaseMetaData} to reproduce issue
- * [<a href="https://github.com/julianhyde/sqlline/issues/295">SQLLINE-295</a>].
+ * Custom {@link DatabaseMetaData} that sits below {@link
+ * DelegatingDatabaseMetaData} in the class hierarchy, so that method lookup
+ * must walk the superclass chain to reach inherited methods such as
+ * {@code getTables}. Reproduces issue
+ * <a href="https://github.com/julianhyde/sqlline/issues/295">SQLLINE-295</a>.
  */
-public class CustomDatabaseMetadata extends JDBCDatabaseMetaData {
-  public CustomDatabaseMetadata(JDBCConnection c) throws SQLException {
-    super(c);
+public class CustomDatabaseMetadata extends DelegatingDatabaseMetaData {
+  public CustomDatabaseMetadata(DatabaseMetaData delegate) {
+    super(delegate);
   }
 
   @Override public ResultSet getPrimaryKeys(String catalog, String schema,
